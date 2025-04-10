@@ -10,6 +10,10 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import PasswordReset from "./pages/PasswordReset";
 import ProfileSetup from "./pages/ProfileSetup";
+import Profile from "./pages/Profile";
+import ClientRequests from "./pages/ClientRequests";
+import Sessions from "./pages/Sessions";
+import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
@@ -45,7 +49,10 @@ const App = () => (
                 {/* Main layout with navbar */}
                 <Route path="/" element={<Layout />}>
                   <Route index element={<Home />} />
-                  {/* Add other routes here */}
+                  <Route path="/client-requests" element={<ClientRequests />} />
+                  <Route path="/sessions" element={<Sessions />} />
+                  <Route path="/schedule" element={<Schedule />} />
+                  <Route path="/profile" element={<Profile />} />
                 </Route>
               </Route>
               

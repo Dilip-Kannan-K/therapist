@@ -10,7 +10,7 @@ import {
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { BellIcon, Leaf, LogOut, UserCircle } from "lucide-react";
+import { BellIcon, Leaf, LogOut, UserCircle, Calendar, MessageSquare, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Navbar = () => {
@@ -31,20 +31,17 @@ const Navbar = () => {
             <Link to="/" className="text-sm font-medium hover:text-green transition-colors">
               Home
             </Link>
-            <Link to="/partners" className="text-sm font-medium hover:text-green transition-colors">
-              Partners
+            <Link to="/client-requests" className="text-sm font-medium hover:text-green transition-colors">
+              Client Requests
             </Link>
-            <Link to="/services" className="text-sm font-medium hover:text-green transition-colors">
-              Services
+            <Link to="/sessions" className="text-sm font-medium hover:text-green transition-colors">
+              Sessions
             </Link>
-            <Link to="/articles" className="text-sm font-medium hover:text-green transition-colors">
-              Articles
+            <Link to="/schedule" className="text-sm font-medium hover:text-green transition-colors">
+              Schedule
             </Link>
-            <Link to="/affiliates" className="text-sm font-medium hover:text-green transition-colors">
-              Affiliates
-            </Link>
-            <Link to="/connect" className="text-sm font-medium hover:text-green transition-colors">
-              Connect
+            <Link to="/profile" className="text-sm font-medium hover:text-green transition-colors">
+              Profile
             </Link>
           </nav>
         </div>
@@ -69,10 +66,31 @@ const Navbar = () => {
             <DropdownMenuContent align="end" className="w-56">
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
-                <UserCircle className="mr-2 h-4 w-4" />
-                <span>Profile</span>
+              <DropdownMenuItem asChild>
+                <Link to="/profile">
+                  <UserCircle className="mr-2 h-4 w-4" />
+                  <span>Profile</span>
+                </Link>
               </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/client-requests">
+                  <Users className="mr-2 h-4 w-4" />
+                  <span>Client Requests</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/sessions">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  <span>Sessions</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link to="/schedule">
+                  <Calendar className="mr-2 h-4 w-4" />
+                  <span>Schedule</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
               <DropdownMenuItem onClick={logout}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
