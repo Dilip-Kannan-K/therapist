@@ -1,4 +1,5 @@
 
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,39 +14,49 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
 
-const queryClient = new QueryClient();
+// Create a new QueryClient instance with explicit configuration
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+      refetchOnWindowFocus: false,
+    },
+  },
+});
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            {/* Public routes */}
-            <Route path="/login" element={<Login />} />
-            
-            {/* Protected routes */}
-            <Route element={<ProtectedRoute />}>
-              {/* Routes that require authentication */}
-              <Route path="/reset-password" element={<PasswordReset />} />
-              <Route path="/profile-setup" element={<ProfileSetup />} />
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <AuthProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <Routes>
+              {/* Public routes */}
+              <Route path="/login" element={<Login />} />
               
-              {/* Main layout with navbar */}
-              <Route path="/" element={<Layout />}>
-                <Route index element={<Home />} />
-                {/* Add other routes here */}
+              {/* Protected routes */}
+              <Route element={<ProtectedRoute />}>
+                {/* Routes that require authentication */}
+                <Route path="/reset-password" element={<PasswordReset />} />
+                <Route path="/profile-setup" element={<ProfileSetup />} />
+                
+                {/* Main layout with navbar */}
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<Home />} />
+                  {/* Add other routes here */}
+                </Route>
               </Route>
-            </Route>
-            
-            {/* 404 route */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </TooltipProvider>
-  </QueryClientProvider>
+              
+              {/* 404 route */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </TooltipProvider>
+    </QueryClientProvider>
+  </React.StrictMode>
 );
 
 export default App;
