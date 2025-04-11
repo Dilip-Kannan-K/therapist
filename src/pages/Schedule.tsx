@@ -5,6 +5,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format, startOfWeek, addDays } from "date-fns";
 import { Clock, UserCircle, Calendar as CalendarIcon } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const mockSessions = [
   {
@@ -78,16 +79,16 @@ const Schedule = () => {
   const renderCalendarView = () => (
     <div className="space-y-6">
       <div className="flex flex-col md:flex-row gap-6">
-        <Card className="flex-1">
+        <Card className="flex-1 w-full">
           <CardHeader>
             <CardTitle>Calendar</CardTitle>
           </CardHeader>
-          <CardContent className="flex justify-center">
+          <CardContent className="flex justify-center w-full">
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              className="rounded-md p-3 pointer-events-auto w-full"
+              className="rounded-md p-3 pointer-events-auto w-full max-w-none"
               components={{
                 DayContent: (props) => {
                   const isSessionDay = sessionDays.some(
@@ -98,10 +99,15 @@ const Schedule = () => {
                   );
                   
                   return (
-                    <div className="relative">
-                      <div>{props.date.getDate()}</div>
+                    <div className="relative flex flex-col items-center justify-center h-full w-full">
+                      <div className={cn(
+                        "text-center",
+                        isSessionDay && "font-bold"
+                      )}>
+                        {props.date.getDate()}
+                      </div>
                       {isSessionDay && (
-                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1 h-1 bg-green rounded-full" />
+                        <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-green rounded-full" />
                       )}
                     </div>
                   );
@@ -121,7 +127,7 @@ const Schedule = () => {
             {sessionsForDate.length > 0 ? (
               <div className="space-y-4">
                 {sessionsForDate.map((session) => (
-                  <div key={session.id} className="border rounded-lg p-4">
+                  <div key={session.id} className="border rounded-lg p-4 hover:border-green transition-colors">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center space-x-3">
                         <UserCircle className="h-8 w-8 text-gray-500" />
