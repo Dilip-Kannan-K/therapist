@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -7,7 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { format, startOfWeek, addDays } from "date-fns";
 import { Clock, UserCircle, Calendar as CalendarIcon } from "lucide-react";
 
-// Mock data for scheduled sessions
 const mockSessions = [
   {
     id: "1",
@@ -64,7 +62,6 @@ const Schedule = () => {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const [view, setView] = useState<"calendar" | "list">("calendar");
   
-  // Sessions for the selected date
   const sessionsForDate = selectedDate 
     ? mockSessions.filter(
         session => 
@@ -74,10 +71,8 @@ const Schedule = () => {
       )
     : [];
     
-  // All sessions sorted by date
   const sortedSessions = [...mockSessions].sort((a, b) => a.date.getTime() - b.date.getTime());
   
-  // Calculate session days for the calendar
   const sessionDays = mockSessions.map(session => session.date);
   
   const renderCalendarView = () => (
@@ -87,12 +82,12 @@ const Schedule = () => {
           <CardHeader>
             <CardTitle>Calendar</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="flex justify-center">
             <Calendar
               mode="single"
               selected={selectedDate}
               onSelect={setSelectedDate}
-              className="rounded-md p-3 pointer-events-auto"
+              className="rounded-md p-3 pointer-events-auto w-full"
               components={{
                 DayContent: (props) => {
                   const isSessionDay = sessionDays.some(
