@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600;700&display=swap');
 
 @tailwind base;
@@ -7,7 +6,7 @@
 
 @layer base {
   :root {
-    --background: 262 48% 93%;
+    --background: 262 48% 95%;
     --foreground: 240 10% 3.9%;
 
     --card: 0 0% 100%;
