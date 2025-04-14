@@ -13,6 +13,7 @@ import ProfileSetup from "./pages/ProfileSetup";
 import Profile from "./pages/Profile";
 import ClientRequests from "./pages/ClientRequests";
 import Sessions from "./pages/Sessions";
+import ClientSession from "./pages/ClientSession";
 import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -51,6 +52,7 @@ const App = () => (
                   <Route index element={<Home />} />
                   <Route path="/client-requests" element={<ClientRequests />} />
                   <Route path="/sessions" element={<Sessions />} />
+                  <Route path="/client-session/:clientId" element={<ClientSession />} />
                   <Route path="/schedule" element={<Schedule />} />
                   <Route path="/profile" element={<Profile />} />
                 </Route>

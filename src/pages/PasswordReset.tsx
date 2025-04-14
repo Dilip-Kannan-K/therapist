@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/context/AuthContext';
-import { AlertCircle, Check, Leaf, LockKeyhole } from 'lucide-react';
+import { AlertCircle, Check, Leaf, LockKeyhole, Eye, EyeOff } from 'lucide-react';
 import { Progress } from '@/components/ui/progress';
 
 const PasswordReset = () => {
@@ -16,6 +16,9 @@ const PasswordReset = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [passwordStrength, setPasswordStrength] = useState(0);
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const { resetPassword } = useAuth();
   const navigate = useNavigate();
@@ -82,7 +85,7 @@ const PasswordReset = () => {
     
     try {
       await resetPassword(currentPassword, newPassword);
-      navigate('/profile-setup');
+      navigate('/profile');
     } catch (err: any) {
       setError(err.message || 'An error occurred');
     } finally {
@@ -122,30 +125,56 @@ const PasswordReset = () => {
               
               <div className="space-y-2">
                 <Label htmlFor="current-password">Current Password</Label>
-                <Input 
-                  id="current-password" 
-                  type="password" 
-                  placeholder="Enter your current password"
-                  value={currentPassword}
-                  onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="input-primary"
-                  disabled={isLoading}
-                  required
-                />
+                <div className="relative">
+                  <Input 
+                    id="current-password" 
+                    type={showCurrentPassword ? "text" : "password"} 
+                    placeholder="Enter your current password"
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    className="input-primary pr-10"
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  >
+                    {showCurrentPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="new-password">New Password</Label>
-                <Input 
-                  id="new-password" 
-                  type="password" 
-                  placeholder="Create a strong password"
-                  value={newPassword}
-                  onChange={handlePasswordChange}
-                  className="input-primary"
-                  disabled={isLoading}
-                  required
-                />
+                <div className="relative">
+                  <Input 
+                    id="new-password" 
+                    type={showNewPassword ? "text" : "password"} 
+                    placeholder="Create a strong password"
+                    value={newPassword}
+                    onChange={handlePasswordChange}
+                    className="input-primary pr-10"
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  >
+                    {showNewPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
                 
                 <div className="space-y-1 pt-1">
                   <div className="flex justify-between text-xs">
@@ -173,16 +202,29 @@ const PasswordReset = () => {
               
               <div className="space-y-2">
                 <Label htmlFor="confirm-password">Confirm New Password</Label>
-                <Input 
-                  id="confirm-password" 
-                  type="password" 
-                  placeholder="Confirm your new password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="input-primary"
-                  disabled={isLoading}
-                  required
-                />
+                <div className="relative">
+                  <Input 
+                    id="confirm-password" 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    placeholder="Confirm your new password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="input-primary pr-10"
+                    disabled={isLoading}
+                    required
+                  />
+                  <button
+                    type="button"
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
                 {newPassword && confirmPassword && newPassword !== confirmPassword && (
                   <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
                 )}

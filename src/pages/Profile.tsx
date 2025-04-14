@@ -1,5 +1,5 @@
-
 import { useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { useAuth } from '@/context/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,13 +9,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check, Loader2, Upload } from 'lucide-react';
+import { Check, Loader2, Upload, Lock } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useToast } from '@/hooks/use-toast';
 
 const Profile = () => {
   const { user, updateUser } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -37,7 +38,6 @@ const Profile = () => {
     }
   });
   
-  // Demo data for dropdowns
   const therapyStyleOptions = [
     'Cognitive Behavioral Therapy (CBT)', 
     'Mindfulness-Based Therapy',
@@ -144,7 +144,6 @@ const Profile = () => {
     setIsLoading(true);
     
     try {
-      // Update profile in context
       await updateUser({
         ...formData,
         profileCompleted: true
@@ -165,10 +164,24 @@ const Profile = () => {
       setIsLoading(false);
     }
   };
+  
+  const handleChangePassword = () => {
+    navigate('/reset-password');
+  };
 
   return (
     <div className="container mx-auto py-8 px-4">
       <h1 className="text-2xl font-bold mb-6">Your Profile</h1>
+      
+      <div className="flex flex-col md:flex-row gap-6 mb-6">
+        <Button 
+          onClick={handleChangePassword}
+          className="bg-green hover:bg-green/90 flex items-center"
+        >
+          <Lock className="mr-2 h-4 w-4" />
+          Change Password
+        </Button>
+      </div>
       
       <Card>
         <CardHeader>
