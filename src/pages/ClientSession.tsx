@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { MessageSquare, Video, Mic, Send, FileText, UserCircle, ArrowLeft } from "lucide-react";
 import { useParams, useNavigate } from "react-router-dom";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 // Mock data for clients - same as in Sessions.tsx
 const mockClients = [
@@ -132,9 +133,9 @@ const ClientSession = () => {
   
   return (
     <div className="container mx-auto py-4 h-[calc(100vh-64px)]">
-      <div className="flex h-full">
+      <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
         {/* Left sidebar - Client info and notes */}
-        <div className="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="bg-white">
           <div className="p-4 border-b">
             <Button 
               variant="outline" 
@@ -159,7 +160,7 @@ const ClientSession = () => {
             </div>
           </div>
           
-          <div className="flex-grow overflow-hidden flex flex-col">
+          <div className="flex-grow overflow-hidden flex flex-col h-[calc(100%-88px)]">
             <Tabs defaultValue="notes" className="flex flex-col h-full">
               <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="notes">Notes</TabsTrigger>
@@ -209,10 +210,12 @@ const ClientSession = () => {
               </TabsContent>
             </Tabs>
           </div>
-        </div>
+        </ResizablePanel>
+        
+        <ResizableHandle withHandle />
         
         {/* Main content - Session interface */}
-        <div className="flex-grow flex flex-col bg-gray-50">
+        <ResizablePanel defaultSize={75} className="bg-gray-50">
           <div className="bg-white p-4 border-b flex items-center justify-between">
             <h2 className="text-lg font-medium">Session with {client.name}</h2>
             
@@ -247,7 +250,7 @@ const ClientSession = () => {
           </div>
           
           {sessionMode === "chat" && (
-            <div className="flex-grow flex flex-col">
+            <div className="flex-grow flex flex-col h-[calc(100%-64px)]">
               <ScrollArea className="flex-grow p-4">
                 <div className="space-y-4">
                   {messages.map(message => (
@@ -319,8 +322,8 @@ const ClientSession = () => {
               </div>
             </div>
           )}
-        </div>
-      </div>
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 };
