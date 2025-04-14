@@ -3,7 +3,31 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { UserCircle } from "lucide-react";
+import { UserCircle, Calendar, Clock, RefreshCcw, X } from "lucide-react";
+import { 
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
+import { 
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import { toast } from "sonner";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 
 // Mock data for clients
 const mockClients = [
@@ -58,12 +82,80 @@ const mockClients = [
 ];
 
 const Sessions = () => {
-  const [clients] = useState(mockClients);
+  const [clients, setClients] = useState(mockClients);
   const navigate = useNavigate();
+  
+  // States for the cancel/reschedule dialog
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [selectedClient, setSelectedClient] = useState<any | null>(null);
+  const [cancellationNote, setCancellationNote] = useState("");
+  const [isReschedule, setIsReschedule] = useState(false);
+  const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
+  const [rescheduleDate, setRescheduleDate] = useState<Date | undefined>(undefined);
+  const [rescheduleTime, setRescheduleTime] = useState("14:00");
   
   const handleConnectClient = (clientId: string) => {
     navigate(`/client-session/${clientId}`);
   };
+  
+  const openCancelDialog = (client: any) => {
+    setSelectedClient(client);
+    setCancelDialogOpen(true);
+    setCancellationNote("");
+    setIsReschedule(false);
+    setRescheduleDate(undefined);
+  };
+  
+  const handleCancellation = () => {
+    if (isReschedule && !rescheduleDate) {
+      toast.error("Please select a date for rescheduling");
+      return;
+    }
+    
+    if (cancellationNote.trim() === "") {
+      toast.error("Please provide a reason for the cancellation");
+      return;
+    }
+    
+    if (!isReschedule) {
+      // Open confirmation dialog before cancelling
+      setConfirmCancelOpen(true);
+    } else {
+      // Process reschedule directly
+      processCancellation();
+    }
+  };
+  
+  const processCancellation = () => {
+    // In a real app, this would call an API to update the session
+    const updatedClients = clients.map(client => {
+      if (client.id === selectedClient?.id) {
+        return {
+          ...client,
+          nextSession: isReschedule 
+            ? format(rescheduleDate!, "MMMM d, yyyy") + " at " + rescheduleTime 
+            : "Cancelled"
+        };
+      }
+      return client;
+    });
+    
+    setClients(updatedClients);
+    setCancelDialogOpen(false);
+    setConfirmCancelOpen(false);
+    
+    toast.success(
+      isReschedule 
+        ? `Session with ${selectedClient?.name} rescheduled to ${format(rescheduleDate!, "MMMM d, yyyy")} at ${rescheduleTime}`
+        : `Session with ${selectedClient?.name} cancelled`
+    );
+  };
+  
+  const timeOptions = [
+    "09:00", "09:30", "10:00", "10:30", "11:00", "11:30", 
+    "12:00", "12:30", "13:00", "13:30", "14:00", "14:30", 
+    "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"
+  ];
   
   return (
     <div className="container mx-auto py-8 px-4">
@@ -100,17 +192,159 @@ const Sessions = () => {
               </div>
             </CardContent>
             
-            <CardFooter>
+            <CardFooter className="flex space-x-2">
               <Button 
-                className="w-full bg-green hover:bg-green/90" 
+                className="flex-1 bg-green hover:bg-green/90" 
                 onClick={() => handleConnectClient(client.id)}
               >
                 Connect
+              </Button>
+              <Button 
+                variant="outline"
+                className="flex-none text-red-500 border-red-200 hover:bg-red-50 hover:text-red-600"
+                onClick={() => openCancelDialog(client)}
+              >
+                <X className="h-4 w-4 mr-1" /> Cancel
               </Button>
             </CardFooter>
           </Card>
         ))}
       </div>
+      
+      {/* Cancel/Reschedule Dialog */}
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>
+              {isReschedule ? "Reschedule Session" : "Cancel Session"}
+            </DialogTitle>
+            <DialogDescription>
+              {isReschedule
+                ? `Reschedule your session with ${selectedClient?.name}`
+                : `Cancel your upcoming session with ${selectedClient?.name}`}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label htmlFor="note" className="text-sm font-medium">
+                Reason for {isReschedule ? "rescheduling" : "cancellation"}
+              </label>
+              <Textarea
+                id="note"
+                placeholder="Please provide a reason..."
+                value={cancellationNote}
+                onChange={(e) => setCancellationNote(e.target.value)}
+                className="min-h-[100px]"
+              />
+            </div>
+            
+            {isReschedule && (
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">New Date</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        className={cn(
+                          "w-full justify-start text-left font-normal",
+                          !rescheduleDate && "text-muted-foreground"
+                        )}
+                      >
+                        <Calendar className="h-4 w-4 mr-2" />
+                        {rescheduleDate ? format(rescheduleDate, "PPP") : <span>Pick a date</span>}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarComponent
+                        mode="single"
+                        selected={rescheduleDate}
+                        onSelect={setRescheduleDate}
+                        initialFocus
+                        disabled={(date) => date < new Date()}
+                        className="pointer-events-auto"
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                
+                <div className="space-y-2">
+                  <label htmlFor="time" className="text-sm font-medium">New Time</label>
+                  <select
+                    id="time"
+                    value={rescheduleTime}
+                    onChange={(e) => setRescheduleTime(e.target.value)}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                  >
+                    {timeOptions.map((time) => (
+                      <option key={time} value={time}>
+                        {time}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex items-center space-x-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="rounded-full px-3 text-xs"
+                onClick={() => setIsReschedule(!isReschedule)}
+              >
+                {isReschedule ? (
+                  <><X className="h-3.5 w-3.5 mr-1" /> Cancel Instead</>
+                ) : (
+                  <><RefreshCcw className="h-3.5 w-3.5 mr-1" /> Reschedule Instead</>
+                )}
+              </Button>
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-between">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setCancelDialogOpen(false)}
+            >
+              Close
+            </Button>
+            <Button
+              type="button"
+              variant={isReschedule ? "default" : "destructive"}
+              onClick={handleCancellation}
+              className={isReschedule ? "bg-green hover:bg-green/90" : ""}
+            >
+              {isReschedule ? "Reschedule" : "Cancel Session"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Confirmation Dialog for Cancellation */}
+      <AlertDialog open={confirmCancelOpen} onOpenChange={setConfirmCancelOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently cancel your session with {selectedClient?.name}.
+              This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>No, go back</AlertDialogCancel>
+            <AlertDialogAction 
+              className="bg-destructive hover:bg-destructive/90"
+              onClick={processCancellation}
+            >
+              Yes, cancel session
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
