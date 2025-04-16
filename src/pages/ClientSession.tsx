@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { MessageSquare, Video, Mic } from "lucide-react";
@@ -11,59 +10,7 @@ import ClientInfo from "@/components/session/ClientInfo";
 import ChatSession from "@/components/session/ChatSession";
 import VideoSession from "@/components/session/VideoSession";
 
-// Mock data for clients - same as in Sessions.tsx
-const mockClients = [
-  {
-    id: "1",
-    name: "Jane Smith",
-    lastSession: "April 5, 2025",
-    nextSession: "April 12, 2025",
-    profilePicture: "/placeholder.svg",
-    notes: [
-      { id: "n1", date: "April 5, 2025", content: "Discussed work-related anxiety triggers and coping mechanisms." },
-      { id: "n2", date: "March 29, 2025", content: "Reviewed progress on mindfulness exercises. Client reports improvement in sleep quality." }
-    ],
-    messages: [
-      { id: "m1", sender: "therapist", content: "Hello Jane, how are you feeling today?", timestamp: "10:01 AM", type: "text" },
-      { id: "m2", sender: "client", content: "Hi Dr. Thomas, I'm feeling a bit better than last week. The exercises you suggested helped with my anxiety.", timestamp: "10:02 AM", type: "text" },
-      { id: "m3", sender: "therapist", content: "I'm glad to hear that. Let's talk more about which exercises worked best for you.", timestamp: "10:03 AM", type: "text" },
-    ]
-  },
-  {
-    id: "2",
-    name: "Michael Johnson",
-    lastSession: "April 7, 2025",
-    nextSession: "April 14, 2025",
-    profilePicture: "/placeholder.svg",
-    notes: [
-      { id: "n1", date: "April 7, 2025", content: "Discussed job search progress. Client is showing positive outlook despite challenges." },
-      { id: "n2", date: "March 31, 2025", content: "Explored feelings around job loss. Identified negative thought patterns to address." }
-    ],
-    messages: [
-      { id: "m1", sender: "therapist", content: "Hello Michael, how has your week been?", timestamp: "2:00 PM", type: "text" },
-      { id: "m2", sender: "client", content: "It's been challenging but I had two job interviews this week.", timestamp: "2:01 PM", type: "text" },
-      { id: "m3", sender: "therapist", content: "That's excellent progress! How did you feel during the interviews?", timestamp: "2:02 PM", type: "text" },
-    ]
-  },
-  {
-    id: "3",
-    name: "Emily Davis",
-    lastSession: "April 3, 2025",
-    nextSession: "April 10, 2025",
-    profilePicture: "/placeholder.svg",
-    notes: [
-      { id: "n1", date: "April 3, 2025", content: "Discussed recent conflict with partner. Working on communication strategies." },
-      { id: "n2", date: "March 27, 2025", content: "Explored childhood experiences that may contribute to trust issues." }
-    ],
-    messages: [
-      { id: "m1", sender: "therapist", content: "Hello Emily, how have things been with your partner since our last session?", timestamp: "4:00 PM", type: "text" },
-      { id: "m2", sender: "client", content: "We had a good conversation using the techniques you suggested. I felt heard for the first time in a while.", timestamp: "4:02 PM", type: "text" },
-      { id: "m3", sender: "therapist", content: "That's wonderful progress! Can you share more about what techniques worked best?", timestamp: "4:03 PM", type: "text" },
-    ]
-  }
-];
-
-// Type definitions
+// Define the Message type to match what's in ChatSession.tsx
 interface Message {
   id: string;
   sender: string;
@@ -80,6 +27,58 @@ interface SessionNote {
   content: string;
 }
 
+// Update mockClients to ensure the type property is explicitly 'text' or 'voice'
+const mockClients = [
+  {
+    id: "1",
+    name: "Jane Smith",
+    lastSession: "April 5, 2025",
+    nextSession: "April 12, 2025",
+    profilePicture: "/placeholder.svg",
+    notes: [
+      { id: "n1", date: "April 5, 2025", content: "Discussed work-related anxiety triggers and coping mechanisms." },
+      { id: "n2", date: "March 29, 2025", content: "Reviewed progress on mindfulness exercises. Client reports improvement in sleep quality." }
+    ],
+    messages: [
+      { id: "m1", sender: "therapist", content: "Hello Jane, how are you feeling today?", timestamp: "10:01 AM", type: "text" as const },
+      { id: "m2", sender: "client", content: "Hi Dr. Thomas, I'm feeling a bit better than last week. The exercises you suggested helped with my anxiety.", timestamp: "10:02 AM", type: "text" as const },
+      { id: "m3", sender: "therapist", content: "I'm glad to hear that. Let's talk more about which exercises worked best for you.", timestamp: "10:03 AM", type: "text" as const },
+    ]
+  },
+  {
+    id: "2",
+    name: "Michael Johnson",
+    lastSession: "April 7, 2025",
+    nextSession: "April 14, 2025",
+    profilePicture: "/placeholder.svg",
+    notes: [
+      { id: "n1", date: "April 7, 2025", content: "Discussed job search progress. Client is showing positive outlook despite challenges." },
+      { id: "n2", date: "March 31, 2025", content: "Explored feelings around job loss. Identified negative thought patterns to address." }
+    ],
+    messages: [
+      { id: "m1", sender: "therapist", content: "Hello Michael, how has your week been?", timestamp: "2:00 PM", type: "text" as const },
+      { id: "m2", sender: "client", content: "It's been challenging but I had two job interviews this week.", timestamp: "2:01 PM", type: "text" as const },
+      { id: "m3", sender: "therapist", content: "That's excellent progress! How did you feel during the interviews?", timestamp: "2:02 PM", type: "text" as const },
+    ]
+  },
+  {
+    id: "3",
+    name: "Emily Davis",
+    lastSession: "April 3, 2025",
+    nextSession: "April 10, 2025",
+    profilePicture: "/placeholder.svg",
+    notes: [
+      { id: "n1", date: "April 3, 2025", content: "Discussed recent conflict with partner. Working on communication strategies." },
+      { id: "n2", date: "March 27, 2025", content: "Explored childhood experiences that may contribute to trust issues." }
+    ],
+    messages: [
+      { id: "m1", sender: "therapist", content: "Hello Emily, how have things been with your partner since our last session?", timestamp: "4:00 PM", type: "text" as const },
+      { id: "m2", sender: "client", content: "We had a good conversation using the techniques you suggested. I felt heard for the first time in a while.", timestamp: "4:02 PM", type: "text" as const },
+      { id: "m3", sender: "therapist", content: "That's wonderful progress! Can you share more about what techniques worked best?", timestamp: "4:03 PM", type: "text" as const },
+    ]
+  }
+];
+
 const ClientSession = () => {
   const { clientId } = useParams();
   
@@ -94,7 +93,7 @@ const ClientSession = () => {
     
     if (foundClient) {
       setClient(foundClient);
-      setMessages(foundClient.messages);
+      setMessages(foundClient.messages as Message[]); // Type assertion to ensure compatibility
       setNotes(foundClient.notes);
     }
   }, [clientId]);
