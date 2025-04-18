@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send } from "lucide-react";
-import { useParams } from "react-router-dom";
 
 interface Message {
   id: string;
@@ -16,7 +15,7 @@ interface Message {
 
 interface ChatSessionProps {
   messages: Message[];
-  onSendMessage: (message: string, type: 'text' | 'voice') => void;
+  onSendMessage: (message: string) => void;
 }
 
 const ChatSession: React.FC<ChatSessionProps> = ({ messages, onSendMessage }) => {
@@ -24,7 +23,7 @@ const ChatSession: React.FC<ChatSessionProps> = ({ messages, onSendMessage }) =>
 
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
-    onSendMessage(newMessage, 'text');
+    onSendMessage(newMessage);
     setNewMessage("");
   };
 

@@ -1,10 +1,8 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { MessageSquare, Video, Mic } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+import { MessageSquare, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-
 import ClientInfo from "@/components/session/ClientInfo";
 import ChatSession from "@/components/session/ChatSession";
 import VideoSession from "@/components/session/VideoSession";
@@ -76,11 +74,10 @@ const mockClients = [
 
 const ClientSession = () => {
   const { clientId } = useParams();
-  
   const [client, setClient] = useState<any | null>(null);
-  const [sessionMode, setSessionMode] = useState<"chat" | "video" | "audio">("chat");
   const [messages, setMessages] = useState<Message[]>([]);
   const [notes, setNotes] = useState<SessionNote[]>([]);
+  const [activeSession, setActiveSession] = useState<"chat" | "video">("chat");
   
   useEffect(() => {
     const foundClient = mockClients.find(c => c.id === clientId);
@@ -92,7 +89,7 @@ const ClientSession = () => {
     }
   }, [clientId]);
   
-  const handleSendMessage = (content: string, type: 'text' | 'voice') => {
+  const handleSendMessage = (content: string) => {
     if (!content.trim()) return;
     
     const newMsg: Message = {
@@ -100,7 +97,7 @@ const ClientSession = () => {
       sender: "therapist",
       content: content,
       timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-      type: type
+      type: 'text'
     };
     
     setMessages(prev => [...prev, newMsg]);
@@ -128,54 +125,48 @@ const ClientSession = () => {
   
   return (
     <div className="container mx-auto py-4 h-[calc(100vh-64px)]">
-      <Tabs defaultValue="session" className="w-full h-full">
-        <TabsList className="mb-4">
-          <TabsTrigger value="session">Session</TabsTrigger>
-          <TabsTrigger value="video">Video/Audio</TabsTrigger>
-        </TabsList>
+      <div className="flex gap-4 mb-4">
+        <Button
+          variant={activeSession === "chat" ? "default" : "outline"}
+          onClick={() => setActiveSession("chat")}
+          className={activeSession === "chat" ? "bg-green hover:bg-green/90" : ""}
+        >
+          <MessageSquare className="h-4 w-4 mr-2" /> Chat Session
+        </Button>
+        <Button
+          variant={activeSession === "video" ? "default" : "outline"}
+          onClick={() => setActiveSession("video")}
+          className={activeSession === "video" ? "bg-green hover:bg-green/90" : ""}
+        >
+          <Video className="h-4 w-4 mr-2" /> Video Session
+        </Button>
+      </div>
+
+      <ResizablePanelGroup direction="horizontal" className="h-[calc(100%-48px)] rounded-lg border">
+        <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="bg-white">
+          <ClientInfo 
+            client={client}
+            notes={notes}
+            onAddNote={handleAddNote}
+          />
+        </ResizablePanel>
         
-        <TabsContent value="session" className="h-[calc(100%-40px)]">
-          <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
-            <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="bg-white">
-              <ClientInfo 
-                client={client}
-                notes={notes}
-                onAddNote={handleAddNote}
-              />
-            </ResizablePanel>
-            
-            <ResizableHandle withHandle />
-            
-            <ResizablePanel defaultSize={75}>
-              <ChatSession 
-                messages={messages}
-                onSendMessage={handleSendMessage}
-              />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </TabsContent>
+        <ResizableHandle withHandle />
         
-        <TabsContent value="video" className="h-[calc(100%-40px)]">
-          <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
-            <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="bg-white">
-              <ClientInfo 
-                client={client}
-                notes={notes}
-                onAddNote={handleAddNote}
-              />
-            </ResizablePanel>
-            
-            <ResizableHandle withHandle />
-            
-            <ResizablePanel defaultSize={75}>
-              <VideoSession
-                mode={sessionMode === "chat" ? "video" : sessionMode}
-                onChangeMode={(mode) => setSessionMode(mode)}
-              />
-            </ResizablePanel>
-          </ResizablePanelGroup>
-        </TabsContent>
-      </Tabs>
+        <ResizablePanel defaultSize={75}>
+          {activeSession === "chat" ? (
+            <ChatSession 
+              messages={messages}
+              onSendMessage={handleSendMessage}
+            />
+          ) : (
+            <VideoSession
+              mode="video"
+              onChangeMode={() => {}}
+            />
+          )}
+        </ResizablePanel>
+      </ResizablePanelGroup>
     </div>
   );
 };
