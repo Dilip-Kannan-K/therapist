@@ -5,20 +5,16 @@ import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
-// Import our new components
 import ClientInfo from "@/components/session/ClientInfo";
 import ChatSession from "@/components/session/ChatSession";
 import VideoSession from "@/components/session/VideoSession";
 
-// Define the Message type to match what's in ChatSession.tsx
 interface Message {
   id: string;
   sender: string;
   content: string;
   timestamp: string;
   type: 'text' | 'voice';
-  voiceUrl?: string;
-  duration?: number;
 }
 
 interface SessionNote {
@@ -27,7 +23,6 @@ interface SessionNote {
   content: string;
 }
 
-// Update mockClients to ensure the type property is explicitly 'text' or 'voice'
 const mockClients = [
   {
     id: "1",
@@ -88,27 +83,24 @@ const ClientSession = () => {
   const [notes, setNotes] = useState<SessionNote[]>([]);
   
   useEffect(() => {
-    // Find client by ID
     const foundClient = mockClients.find(c => c.id === clientId);
     
     if (foundClient) {
       setClient(foundClient);
-      setMessages(foundClient.messages as Message[]); // Type assertion to ensure compatibility
+      setMessages(foundClient.messages as Message[]); 
       setNotes(foundClient.notes);
     }
   }, [clientId]);
   
-  const handleSendMessage = (content: string, type: 'text' | 'voice', voiceUrl?: string, duration?: number) => {
-    if ((type === 'text' && !content.trim()) || (type === 'voice' && !voiceUrl)) return;
+  const handleSendMessage = (content: string, type: 'text' | 'voice') => {
+    if (!content.trim()) return;
     
     const newMsg: Message = {
       id: `m${messages.length + 1}`,
       sender: "therapist",
       content: content,
       timestamp: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}),
-      type: type,
-      voiceUrl: voiceUrl,
-      duration: duration
+      type: type
     };
     
     setMessages(prev => [...prev, newMsg]);
@@ -144,7 +136,6 @@ const ClientSession = () => {
         
         <TabsContent value="session" className="h-[calc(100%-40px)]">
           <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
-            {/* Left sidebar - Client info and notes */}
             <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="bg-white">
               <ClientInfo 
                 client={client}
@@ -155,7 +146,6 @@ const ClientSession = () => {
             
             <ResizableHandle withHandle />
             
-            {/* Main content - Chat session */}
             <ResizablePanel defaultSize={75}>
               <ChatSession 
                 messages={messages}
@@ -167,7 +157,6 @@ const ClientSession = () => {
         
         <TabsContent value="video" className="h-[calc(100%-40px)]">
           <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg border">
-            {/* Left sidebar - Client info and notes */}
             <ResizablePanel defaultSize={25} minSize={20} maxSize={40} className="bg-white">
               <ClientInfo 
                 client={client}
@@ -178,7 +167,6 @@ const ClientSession = () => {
             
             <ResizableHandle withHandle />
             
-            {/* Main content - Video/Audio session */}
             <ResizablePanel defaultSize={75}>
               <VideoSession
                 mode={sessionMode === "chat" ? "video" : sessionMode}
