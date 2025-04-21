@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,7 +8,7 @@ interface Message {
   id: string;
   sender: string;
   content: string;
-  timestamp: string; // "10:01 AM"
+  timestamp: string;
   type: 'text' | 'voice';
 }
 
@@ -38,20 +37,14 @@ const formatDateSeparator = (date: string) => {
 const ChatSession: React.FC<ChatSessionProps> = ({ messages, onSendMessage }) => {
   const [newMessage, setNewMessage] = useState("");
   
-  // To get date separated messages, we need message objects to include the date.
-  // We'll assume for now that any message with the same fullDate/group is from the same day.
-  // If your messages don't include a full date, this can be changed to whatever date logic you use.
-
-  // We'll simulate this by default with a dummy implementation for the demo.
-  // For your real app, replace getMessageDate with your actual message structure logic.
-  
-  let lastDate: string | null = null;
-
   const handleSendMessage = () => {
     if (!newMessage.trim()) return;
     onSendMessage(newMessage);
     setNewMessage("");
   };
+
+  // Track the last displayed date to avoid duplicates
+  let lastDisplayedDate: string | null = null;
 
   return (
     <div className="flex-grow flex flex-col h-full bg-gray-50 min-h-0">
@@ -62,15 +55,15 @@ const ChatSession: React.FC<ChatSessionProps> = ({ messages, onSendMessage }) =>
       <ScrollArea className="flex-grow p-4 space-y-2">
         <div className="space-y-4">
           {messages.map((message, idx) => {
-            // Date logic
-            let messageDate = (message as any).fullDate || (message as any).date || "Today";
-            if (messageDate === undefined || !messageDate) {
-              messageDate = "Today";
-            }
+            const messageDate = (message as any).fullDate || (message as any).date || "Today";
             let showDate = false;
-            if (idx === 0 || (messages[idx - 1] && (messages[idx - 1] as any).fullDate !== messageDate)) {
+            
+            // Only show date if it's different from the last displayed date
+            if (messageDate !== lastDisplayedDate) {
               showDate = true;
+              lastDisplayedDate = messageDate;
             }
+            
             return (
               <React.Fragment key={message.id}>
                 {showDate && (
@@ -135,4 +128,3 @@ const ChatSession: React.FC<ChatSessionProps> = ({ messages, onSendMessage }) =>
 };
 
 export default ChatSession;
-
