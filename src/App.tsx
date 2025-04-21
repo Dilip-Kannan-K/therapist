@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -18,8 +17,8 @@ import Schedule from "./pages/Schedule";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { AuthProvider } from "./context/AuthContext";
+import Notifications from "./pages/Notifications";
 
-// Create a new QueryClient instance with explicit configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -54,6 +53,7 @@ const App = () => (
                   <Route path="/sessions" element={<Sessions />} />
                   <Route path="/client-session/:clientId" element={<ClientSession />} />
                   <Route path="/schedule" element={<Schedule />} />
+                  <Route path="/notifications" element={<Notifications />} />
                   <Route path="/profile" element={<Profile />} />
                 </Route>
               </Route>

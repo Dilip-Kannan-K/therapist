@@ -1,21 +1,52 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuLabel, 
-  DropdownMenuSeparator, 
-  DropdownMenuTrigger 
-} from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { BellIcon, Leaf, LogOut, UserCircle, Calendar, MessageSquare, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import React from "react";
+import { useToast } from "@/hooks/use-toast";
+
+// Temporary notifications for this session.
+const tempNotifications = [
+  {
+    id: 1,
+    title: "Session Reminder",
+    description: "You have a session with Jane Smith today at 3:00 PM.",
+    type: "reminder",
+    date: "April 21, 2025",
+  },
+  {
+    id: 2,
+    title: "New Message",
+    description: "Michael Johnson sent you a new message.",
+    type: "message",
+    date: "April 20, 2025",
+  },
+];
+const hasNotifications = tempNotifications.length > 0;
 
 const Navbar = () => {
   const { user, logout } = useAuth();
-  
+  const { toast } = useToast();
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  // Show toast at login if there are multiple notifications
+  React.useEffect(() => {
+    if (
+      hasNotifications &&
+      tempNotifications.length > 1 &&
+      location.pathname === "/" // On home page (simulate login)
+    ) {
+      toast({
+        title: "Notifications",
+        description: "You may have new messages, check notifications.",
+      });
+    }
+  }, [location.pathname, toast]);
+
   return (
     <header className="bg-white border-b border-gray-200 py-3 px-4 sm:px-6">
       <div className="flex justify-between items-center">
@@ -40,6 +71,9 @@ const Navbar = () => {
             <Link to="/schedule" className="text-sm font-medium hover:text-green transition-colors">
               Schedule
             </Link>
+            <Link to="/notifications" className="text-sm font-medium hover:text-green transition-colors">
+              Notifications
+            </Link>
             <Link to="/profile" className="text-sm font-medium hover:text-green transition-colors">
               Profile
             </Link>
@@ -47,9 +81,17 @@ const Navbar = () => {
         </div>
         
         <div className="flex items-center space-x-4">
-          <Button variant="ghost" size="icon" className="relative">
+          <Button 
+            variant="ghost" 
+            size="icon" 
+            className="relative" 
+            onClick={() => navigate("/notifications")}
+            aria-label="Notifications"
+          >
             <BellIcon className="h-5 w-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-green rounded-full"></span>
+            {hasNotifications && (
+              <span className="absolute top-1 right-1 w-2 h-2 bg-green rounded-full border-2 border-white"></span>
+            )}
           </Button>
           
           <DropdownMenu>
